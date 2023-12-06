@@ -1,0 +1,29 @@
+
+---
+title: "Our World In Data: Life Expectancy"
+format: html
+editor: visual
+---
+## Import Data
+
+```{r}
+library(tidyverse)
+library(mongolite)
+
+rm(list=ls())
+lifetime <- readxl::read_xlsx('tt_owid_life-expectancy.xlsx',sheet='merged_data') |> janitor::clean_names()
+dim(lifetime)
+```
+Begin EDA
+
+```{r}
+summary(lifetime)
+```
+## Upload Data To Mongo DB: tidytuesday
+
+```{r}
+conn <- mongo(collection = "lifetime", db = "tidytuesday", url = "mongodb://localhost")
+conn$insert(lifetime)
+results <- conn$find('{}') 
+summary(results)
+```
