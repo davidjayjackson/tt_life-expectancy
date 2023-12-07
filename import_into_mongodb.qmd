@@ -11,19 +11,15 @@ library(tidyverse)
 library(mongolite)
 
 rm(list=ls())
-lifetime <- readxl::read_xlsx('tt_owid_life-expectancy.xlsx',sheet='merged_data') |> janitor::clean_names()
-dim(lifetime)
+lifeexpectancy <- readxl::read_xlsx('tt_life-expectancy.xlsx',sheet='Merge1') |> janitor::clean_names()
+str(lifeexpectancy)
 ```
-Begin EDA
 
-```{r}
-summary(lifetime)
-```
 ## Upload Data To Mongo DB: tidytuesday
 
 ```{r}
-conn <- mongo(collection = "lifetime", db = "tidytuesday", url = "mongodb://localhost")
-conn$insert(lifetime)
+conn <- mongo(collection = "lifeexpectancy", db = "tidytuesday", url = "mongodb://localhost")
+conn$insert(lifeexpectancy)
 results <- conn$find('{}') 
-summary(results)
+str(results)
 ```
