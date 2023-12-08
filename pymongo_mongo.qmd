@@ -1,0 +1,37 @@
+---
+title: "Our World In Data: Life Expectancy"
+format: html
+jupyter: python3
+---
+```{python}
+import pandas as pd
+from pymongo import MongoClient
+```
+## Import Excel File
+
+```{python}
+life_expectancy_df = pd.read_excel('tt_life-expectancy.xlsx',sheet_name='Merge1')
+# Cleaning column names (replacing spaces with underscores and converting to lower case)
+life_expectancy_df.columns = [col.lower().replace(' ', '_') for col in life_expectancy_df.columns]
+
+# Connect to MongoDB
+# Note: Modify the connection string if your MongoDB is not running on localhost or has different credentials
+client = MongoClient("mongodb://localhost:27017/")
+db = client["tidytuesday"]
+collection = db["life"]
+
+# Drop the collection if it already exists
+collection.drop()
+
+# Insert the data into the MongoDB collection
+# Converting DataFrame to dictionary format for insertion
+data_to_insert = life_expectancy_df.to_dict("records")
+collection.insert_many(data_to_insert)
+
+# Retrieve and display some of the data from the MongoDB collection
+# Displaying the first 5 documents as an example
+result_documents = collection.find().limit(5)
+result_list = list(result_documents)
+
+# You can print result_list to see the output
+```
