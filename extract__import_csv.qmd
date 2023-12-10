@@ -1,0 +1,57 @@
+---
+title: "Our World In Data: Life Expectancy"
+format: html
+editor: visual
+---
+## Import Data
+
+```{r}
+library(tidyverse)
+library(mongolite)
+library(janitor)
+library(readxl)
+
+rm(list=ls())
+complete <- read_xlsx('marketing.xlsx',sheet='complete_cleaned') |> janitor::clean_names()
+complete$life_expectancy10 <- as.numeric(complete$life_expectancy10)
+complete$life_expectancy25 <- as.numeric(complete$life_expectancy25)
+complete$life_expectancy45 <- as.numeric(complete$life_expectancy45)
+complete$life_expectancy65 <- as.numeric(complete$life_expectancy65)
+complete$life_expectancy80 <- as.numeric(complete$life_expectancy80)
+complete$life_expectancy_diff_fm <- as.numeric(complete$life_expectancy_diff_fm)
+complete$ymd <- as.Date(complete$ymd)
+
+str(complete)
+```
+
+## Requrements:
+### List of Country Only Data
+
+```{r}
+ countries <- complete %>% clean_names() |> filter(!code %in% c("NA","OWID_"))
+str(countries)
+```
+
+### Average Life Expectancy and Male and Female Differences by Year
+
+```{r}
+countries_life_expectancy <- countries |> group_by(ymd) |>
+        summarize( average_le = mean(life_expectancy),
+        average_female_male = mean(life_expectancy_diff_fm))
+        head(countries_life_expectancy)
+```
+### Create marketing MongoDB Db and three table  from result 
+```{r}
+conn <- mongo(collection = "countries", db = "marketing", url = "mongodb://localhost")
+conn$drop() 
+conn$insert(countries)
+results <- conn$find('{}') 
+str(results)
+```
+```{r}
+conn1 <- mongo(collection = "countries_life_expectancy", db = "marketing", url = "mongodb://localhost")
+conn1$drop() 
+conn1$insert(countries_life_expectancy)
+results <- conn1$find('{}') 
+str(results)
+```
