@@ -62,7 +62,7 @@ str(results)
 ## Countries Listed as Low-income countries, Middle-income countries and High-income countries
 
 ```{r}
- income_groups <- complete  |> filter(entity %in% c("Low-income countries","Middle-income countries"," High-income countries")) |> 
+ income_groups <- complete  |> filter(entity %in% c("Low-income countries","Middle-income countries","High-income countries")) |> 
         select(entity,ymd,life_expectancy,life_expectancy_diff_fm)
 str(income_groups)
 
