@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.333">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Our World In Data: Life Expectancy</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="extract__import_csv_files/libs/clipboard/clipboard.min.js"></script>
+<script src="extract__import_csv_files/libs/quarto-html/quarto.js"></script>
+<script src="extract__import_csv_files/libs/quarto-html/popper.min.js"></script>
+<script src="extract__import_csv_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="extract__import_csv_files/libs/quarto-html/anchor.min.js"></script>
+<link href="extract__import_csv_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="extract__import_csv_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="extract__import_csv_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="extract__import_csv_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="extract__import_csv_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Our World In Data: Life Expectancy</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="import-data" class="level2">
+<h2 class="anchored" data-anchor-id="import-data">Import Data</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.4
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.4.4     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.0
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mongolite)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(janitor)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'janitor'
+
+The following objects are masked from 'package:stats':
+
+    chisq.test, fisher.test</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>complete <span class="ot">&lt;-</span> <span class="fu">read_xlsx</span>(<span class="st">'marketing.xlsx'</span>,<span class="at">sheet=</span><span class="st">'complete_cleaned'</span>) <span class="sc">|&gt;</span> janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>complete<span class="sc">$</span>life_expectancy10 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(complete<span class="sc">$</span>life_expectancy10)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>complete<span class="sc">$</span>life_expectancy25 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(complete<span class="sc">$</span>life_expectancy25)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>complete<span class="sc">$</span>life_expectancy45 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(complete<span class="sc">$</span>life_expectancy45)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>complete<span class="sc">$</span>life_expectancy65 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(complete<span class="sc">$</span>life_expectancy65)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>complete<span class="sc">$</span>life_expectancy80 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(complete<span class="sc">$</span>life_expectancy80)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>complete<span class="sc">$</span>life_expectancy_diff_fm <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(complete<span class="sc">$</span>life_expectancy_diff_fm)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>complete<span class="sc">$</span>ymd <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(complete<span class="sc">$</span>ymd)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(complete)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [17,448 × 12] (S3: tbl_df/tbl/data.frame)
+ $ entity                 : chr [1:17448] "Albania" "Myanmar" "Saint Kitts and Nevis" "Namibia" ...
+ $ code                   : chr [1:17448] "ALB" "MMR" "KNA" "NAM" ...
+ $ ymd                    : Date[1:17448], format: "1953-01-01" "1953-01-01" ...
+ $ year                   : num [1:17448] 1953 1953 1953 1953 1953 ...
+ $ life_expectancy        : num [1:17448] 46.5 38.5 56.2 43 35.9 ...
+ $ life_expectancy0       : num [1:17448] 46.5 38.5 56.2 43 35.9 ...
+ $ life_expectancy10      : num [1:17448] 66.2 57 64.5 59.3 54 ...
+ $ life_expectancy25      : num [1:17448] 68.2 60.8 66.7 63.1 58.4 ...
+ $ life_expectancy45      : num [1:17448] 71.1 67.4 70.7 69.4 65.9 ...
+ $ life_expectancy65      : num [1:17448] 76.5 75.5 76.8 76.4 74.7 ...
+ $ life_expectancy80      : num [1:17448] 85.1 84.6 85.2 85.1 84.3 ...
+ $ life_expectancy_diff_fm: num [1:17448] 7.08 2.78 4.53 3.88 3.12 ...</code></pre>
+</div>
+</div>
+</section>
+<section id="requrements" class="level2">
+<h2 class="anchored" data-anchor-id="requrements">Requrements:</h2>
+<section id="list-of-country-only-data" class="level3">
+<h3 class="anchored" data-anchor-id="list-of-country-only-data">List of Country Only Data</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a> countries <span class="ot">&lt;-</span> complete <span class="sc">%&gt;%</span> <span class="fu">clean_names</span>() <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="sc">!</span>code <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"NA"</span>,<span class="st">"OWID_"</span>))</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(countries)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [16,158 × 12] (S3: tbl_df/tbl/data.frame)
+ $ entity                 : chr [1:16158] "Albania" "Myanmar" "Saint Kitts and Nevis" "Namibia" ...
+ $ code                   : chr [1:16158] "ALB" "MMR" "KNA" "NAM" ...
+ $ ymd                    : Date[1:16158], format: "1953-01-01" "1953-01-01" ...
+ $ year                   : num [1:16158] 1953 1953 1953 1953 1953 ...
+ $ life_expectancy        : num [1:16158] 46.5 38.5 56.2 43 35.9 ...
+ $ life_expectancy0       : num [1:16158] 46.5 38.5 56.2 43 35.9 ...
+ $ life_expectancy10      : num [1:16158] 66.2 57 64.5 59.3 54 ...
+ $ life_expectancy25      : num [1:16158] 68.2 60.8 66.7 63.1 58.4 ...
+ $ life_expectancy45      : num [1:16158] 71.1 67.4 70.7 69.4 65.9 ...
+ $ life_expectancy65      : num [1:16158] 76.5 75.5 76.8 76.4 74.7 ...
+ $ life_expectancy80      : num [1:16158] 85.1 84.6 85.2 85.1 84.3 ...
+ $ life_expectancy_diff_fm: num [1:16158] 7.08 2.78 4.53 3.88 3.12 ...</code></pre>
+</div>
+</div>
+</section>
+<section id="average-life-expectancy-and-male-and-female-differences-by-year" class="level3">
+<h3 class="anchored" data-anchor-id="average-life-expectancy-and-male-and-female-differences-by-year">Average Life Expectancy and Male and Female Differences by Year</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>countries_life_expectancy <span class="ot">&lt;-</span> countries <span class="sc">|&gt;</span> <span class="fu">group_by</span>(ymd) <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">summarize</span>( <span class="at">average_le =</span> <span class="fu">mean</span>(life_expectancy),</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">average_female_male =</span> <span class="fu">mean</span>(life_expectancy_diff_fm))</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">head</span>(countries_life_expectancy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 3
+  ymd        average_le average_female_male
+  &lt;date&gt;          &lt;dbl&gt;               &lt;dbl&gt;
+1 1953-01-01       51.7                3.85
+2 1954-01-01       52.1                3.79
+3 1955-01-01       52.7                3.84
+4 1956-01-01       53.1                3.90
+5 1957-01-01       53.6                3.95
+6 1958-01-01       54.2                3.98</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>countries_life_expectancy <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>ymd,<span class="at">y=</span>average_le)) <span class="sc">+</span> <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span><span class="st">"Yearly Average Life expectancy"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="extract__import_csv_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>countries_life_expectancy <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>ymd,<span class="at">y=</span>average_female_male)) <span class="sc">+</span> <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title =</span><span class="st">"Yearly Average Difference Male/Female"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="extract__import_csv_files/figure-html/unnamed-chunk-3-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="create-marketing-mongodb-db-and-three-table-from-result" class="level3">
+<h3 class="anchored" data-anchor-id="create-marketing-mongodb-db-and-three-table-from-result">Create marketing MongoDB Db and three table from result</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>conn <span class="ot">&lt;-</span> <span class="fu">mongo</span>(<span class="at">collection =</span> <span class="st">"countries"</span>, <span class="at">db =</span> <span class="st">"marketing"</span>, <span class="at">url =</span> <span class="st">"mongodb://localhost"</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>conn<span class="sc">$</span><span class="fu">drop</span>() </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>conn<span class="sc">$</span><span class="fu">insert</span>(countries)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 5
+ $ nInserted  : num 16158
+ $ nMatched   : num 0
+ $ nRemoved   : num 0
+ $ nUpserted  : num 0
+ $ writeErrors: list()</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> conn<span class="sc">$</span><span class="fu">find</span>(<span class="st">'{}'</span>) </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   16158 obs. of  12 variables:
+ $ entity                 : chr  "Albania" "Myanmar" "Saint Kitts and Nevis" "Namibia" ...
+ $ code                   : chr  "ALB" "MMR" "KNA" "NAM" ...
+ $ ymd                    : chr  "1953-01-01" "1953-01-01" "1953-01-01" "1953-01-01" ...
+ $ year                   : num  1953 1953 1953 1953 1953 ...
+ $ life_expectancy        : num  46.5 38.5 56.2 43 35.9 ...
+ $ life_expectancy0       : num  46.5 38.5 56.2 43 35.9 ...
+ $ life_expectancy10      : num  66.2 57 64.5 59.3 54 ...
+ $ life_expectancy25      : num  68.2 60.8 66.7 63.1 58.4 ...
+ $ life_expectancy45      : num  71.1 67.4 70.7 69.4 65.9 ...
+ $ life_expectancy65      : num  76.5 75.5 76.8 76.4 74.7 ...
+ $ life_expectancy80      : num  85.1 84.6 85.2 85.1 84.3 ...
+ $ life_expectancy_diff_fm: num  7.08 2.78 4.53 3.88 3.12 ...</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>conn1 <span class="ot">&lt;-</span> <span class="fu">mongo</span>(<span class="at">collection =</span> <span class="st">"countries_life_expectancy"</span>, <span class="at">db =</span> <span class="st">"marketing"</span>, <span class="at">url =</span> <span class="st">"mongodb://localhost"</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>conn1<span class="sc">$</span><span class="fu">drop</span>() </span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>conn1<span class="sc">$</span><span class="fu">insert</span>(countries_life_expectancy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 5
+ $ nInserted  : num 69
+ $ nMatched   : num 0
+ $ nRemoved   : num 0
+ $ nUpserted  : num 0
+ $ writeErrors: list()</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> conn1<span class="sc">$</span><span class="fu">find</span>(<span class="st">'{}'</span>) </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   69 obs. of  3 variables:
+ $ ymd                : chr  "1953-01-01" "1954-01-01" "1955-01-01" "1956-01-01" ...
+ $ average_le         : num  51.7 52.1 52.7 53.1 53.6 ...
+ $ average_female_male: num  3.85 3.79 3.84 3.9 3.95 ...</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="countries-listed-as-low-income-countries-middle-income-countries-and-high-income-countries" class="level2">
+<h2 class="anchored" data-anchor-id="countries-listed-as-low-income-countries-middle-income-countries-and-high-income-countries">Countries Listed as Low-income countries, Middle-income countries and High-income countries</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a> income_groups <span class="ot">&lt;-</span> complete  <span class="sc">|&gt;</span> <span class="fu">filter</span>(entity <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Low-income countries"</span>,<span class="st">"Middle-income countries"</span>,<span class="st">" High-income countries"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(entity,ymd,life_expectancy,life_expectancy_diff_fm)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(income_groups)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [136 × 4] (S3: tbl_df/tbl/data.frame)
+ $ entity                 : chr [1:136] "Middle-income countries" "Low-income countries" "Low-income countries" "Middle-income countries" ...
+ $ ymd                    : Date[1:136], format: "1954-01-01" "1954-01-01" ...
+ $ life_expectancy        : num [1:136] 46.2 38.2 38.7 46.7 39 ...
+ $ life_expectancy_diff_fm: num [1:136] 2.56 2.85 2.83 2.67 2.9 ...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(income_groups) <span class="sc">+</span><span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span>ymd,<span class="at">y=</span>life_expectancy,<span class="at">col=</span>entity))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="extract__import_csv_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(income_groups) <span class="sc">+</span><span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span>ymd,<span class="at">y=</span>life_expectancy_diff_fm,<span class="at">col=</span>entity))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="extract__import_csv_files/figure-html/unnamed-chunk-6-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>conn2 <span class="ot">&lt;-</span> <span class="fu">mongo</span>(<span class="at">collection =</span> <span class="st">"income_groups"</span>, <span class="at">db =</span> <span class="st">"marketing"</span>, <span class="at">url =</span> <span class="st">"mongodb://localhost"</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>conn2<span class="sc">$</span><span class="fu">drop</span>() </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>conn2<span class="sc">$</span><span class="fu">insert</span>(income_groups)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 5
+ $ nInserted  : num 136
+ $ nMatched   : num 0
+ $ nRemoved   : num 0
+ $ nUpserted  : num 0
+ $ writeErrors: list()</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> conn2<span class="sc">$</span><span class="fu">find</span>(<span class="st">'{}'</span>) </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   136 obs. of  4 variables:
+ $ entity                 : chr  "Middle-income countries" "Low-income countries" "Low-income countries" "Middle-income countries" ...
+ $ ymd                    : chr  "1954-01-01" "1954-01-01" "1955-01-01" "1955-01-01" ...
+ $ life_expectancy        : num  46.2 38.2 38.7 46.7 39 ...
+ $ life_expectancy_diff_fm: num  2.56 2.85 2.83 2.67 2.9 ...</code></pre>
+</div>
+</div>
+</section>
+<section id="average-for-life_expectancy-and-life_expectancy_diff_fm" class="level2">
+<h2 class="anchored" data-anchor-id="average-for-life_expectancy-and-life_expectancy_diff_fm">Average for life_expectancy and life_expectancy_diff_fm</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>income_group_by_year <span class="ot">&lt;-</span> income_groups <span class="sc">|&gt;</span> <span class="fu">group_by</span>(ymd) <span class="sc">|&gt;</span> <span class="fu">summarize</span>( <span class="at">average_le =</span> <span class="fu">mean</span>(life_expectancy),</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">average_female_male =</span> <span class="fu">mean</span>(life_expectancy_diff_fm))</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">head</span>(income_group_by_year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 3
+  ymd        average_le average_female_male
+  &lt;date&gt;          &lt;dbl&gt;               &lt;dbl&gt;
+1 1954-01-01       42.2                2.70
+2 1955-01-01       42.7                2.75
+3 1956-01-01       43.2                2.81
+4 1957-01-01       43.1                2.82
+5 1958-01-01       43.5                2.90
+6 1959-01-01       42.8                2.92</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(income_group_by_year) <span class="sc">+</span> <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span>ymd,<span class="at">y=</span>average_le))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="extract__import_csv_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(income_group_by_year) <span class="sc">+</span> <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span>ymd,<span class="at">y=</span>average_female_male))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="extract__import_csv_files/figure-html/unnamed-chunk-9-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>conn3 <span class="ot">&lt;-</span> <span class="fu">mongo</span>(<span class="at">collection =</span> <span class="st">"income_group_by_year"</span>, <span class="at">db =</span> <span class="st">"marketing"</span>, <span class="at">url =</span> <span class="st">"mongodb://localhost"</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>conn3<span class="sc">$</span><span class="fu">drop</span>() </span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>conn3<span class="sc">$</span><span class="fu">insert</span>(income_group_by_year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 5
+ $ nInserted  : num 68
+ $ nMatched   : num 0
+ $ nRemoved   : num 0
+ $ nUpserted  : num 0
+ $ writeErrors: list()</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> conn1<span class="sc">$</span><span class="fu">find</span>(<span class="st">'{}'</span>) </span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   69 obs. of  3 variables:
+ $ ymd                : chr  "1953-01-01" "1954-01-01" "1955-01-01" "1956-01-01" ...
+ $ average_le         : num  51.7 52.1 52.7 53.1 53.6 ...
+ $ average_female_male: num  3.85 3.79 3.84 3.9 3.95 ...</code></pre>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
