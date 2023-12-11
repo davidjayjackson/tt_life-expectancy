@@ -39,6 +39,9 @@ countries_life_expectancy <- countries |> group_by(ymd) |>
         summarize( average_le = mean(life_expectancy),
         average_female_male = mean(life_expectancy_diff_fm))
         head(countries_life_expectancy)
+
+countries_life_expectancy |> ggplot(aes(x=ymd,y=average_le)) + geom_line() + labs(title ="Yearly Average Life expectancy")
+countries_life_expectancy |> ggplot(aes(x=ymd,y=average_female_male)) + geom_line() + labs(title ="Yearly Average Difference Male/Female")
 ```
 ### Create marketing MongoDB Db and three table  from result 
 ```{r}
@@ -55,3 +58,44 @@ conn1$insert(countries_life_expectancy)
 results <- conn1$find('{}') 
 str(results)
 ```
+
+## Countries Listed as Low-income countries, Middle-income countries and High-income countries
+
+```{r}
+ income_groups <- complete  |> filter(entity %in% c("Low-income countries","Middle-income countries"," High-income countries")) |> 
+        select(entity,ymd,life_expectancy,life_expectancy_diff_fm)
+str(income_groups)
+
+ggplot(income_groups) +geom_line(aes(x=ymd,y=life_expectancy,col=entity))
+ggplot(income_groups) +geom_line(aes(x=ymd,y=life_expectancy_diff_fm,col=entity))
+
+```
+```{r}
+conn2 <- mongo(collection = "income_groups", db = "marketing", url = "mongodb://localhost")
+conn2$drop() 
+conn2$insert(income_groups)
+results <- conn2$find('{}') 
+str(results)
+```
+## Average for life_expectancy and life_expectancy_diff_fm
+
+```{r}
+
+income_group_by_year <- income_groups |> group_by(ymd) |> summarize( average_le = mean(life_expectancy),
+        average_female_male = mean(life_expectancy_diff_fm))
+        head(income_group_by_year)
+
+```
+```{r}
+ggplot(income_group_by_year) + geom_line(aes(x=ymd,y=average_le))
+ggplot(income_group_by_year) + geom_line(aes(x=ymd,y=average_female_male))
+
+```
+```{r}
+conn3 <- mongo(collection = "income_group_by_year", db = "marketing", url = "mongodb://localhost")
+conn3$drop() 
+conn3$insert(income_group_by_year)
+results <- conn1$find('{}') 
+str(results)
+```
+
