@@ -98,4 +98,56 @@ conn3$insert(income_group_by_year)
 results <- conn1$find('{}') 
 str(results)
 ```
+## First and Last Life Expectancy
 
+```{r}
+# Assuming 'countries' is your data frame and it has columns 'entity' for country and 'ymd' for date
+countries_by_change_in_life_expectancy <-countries %>%
+  group_by(entity) %>%
+  arrange(ymd) %>%
+  summarize(
+    first_life_expectancy = round(first(life_expectancy),2),
+    last_life_expectancy = round(last(life_expectancy),2),
+    percent_change = round(((last(life_expectancy) - first(life_expectancy)) / first(life_expectancy)) * 100, 2)
+  )
+
+```
+```{r}
+conn4 <- mongo(collection = "countries_by_change_in_life_expectancy", db = "marketing", url = "mongodb://localhost")
+conn4$drop() 
+conn4$insert(countries_by_change_in_life_expectancy)
+countries_by_change_in_life_expectancy <- conn1$find('{}') 
+countries_by_change_in_life_expectancy$ymd <- as.Date(countries_by_change_in_life_expectancy$ymd)
+str(countries_by_change_in_life_expectancy)
+```
+```{r}
+library(tidyverse)
+
+# Assuming 'countries' is your data frame and it has columns 'entity', 'ymd', and 'life_expectancy'
+life_expectancy_data <- countries %>%
+  group_by(entity) %>%
+  arrange(ymd) %>%
+  summarize(
+    first_life_expectancy = round(first(life_expectancy),2),
+    last_life_expectancy = round(last(life_expectancy),2),
+    percent_change = round(((last(life_expectancy) - first(life_expectancy)) / first(life_expectancy)) * 100, 2)
+
+  ) %>%
+  pivot_longer(
+    cols = c(first_life_expectancy, last_life_expectancy),
+    names_to = "time_point",
+    values_to = "life_expectancy"
+  ) %>%
+  mutate(time_point = ifelse(time_point == "first_life_expectancy", "First", "Last")) |> head(10)
+
+# Plotting
+ggplot(life_expectancy_data, aes(x = time_point, y = life_expectancy, group = entity)) +
+  geom_line(size=3) +
+  geom_point() +
+  facet_wrap(~ entity, scales = "free_y") +
+  theme_minimal() +
+  labs(title = "First and Last Life Expectancy Values for Each Country",
+       x = "Time Point",
+       y = "Life Expectancy")
+
+```
