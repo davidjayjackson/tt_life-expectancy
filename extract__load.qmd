@@ -5,7 +5,7 @@ editor: visual
 ---
 ## Import Data
 
-```{r}
+```{r,echo=FALSE}
 library(tidyverse)
 library(mongolite)
 library(janitor)
@@ -27,14 +27,14 @@ str(complete)
 ## Requrements:
 ### List of Country Only Data
 
-```{r}
+```{r,echo = FALSE}
  countries <- complete %>% clean_names() |> filter(!code %in% c("NA","OWID_"))
 str(countries)
 ```
 
 ### Average Life Expectancy and Male and Female Differences by Year
 
-```{r}
+```{r,echo = FALSE}
 countries_life_expectancy <- countries |> group_by(ymd) |>
         summarize( average_le = mean(life_expectancy),
         average_female_male = mean(life_expectancy_diff_fm))
@@ -44,14 +44,14 @@ countries_life_expectancy |> ggplot(aes(x=ymd,y=average_le)) + geom_line() + lab
 countries_life_expectancy |> ggplot(aes(x=ymd,y=average_female_male)) + geom_line() + labs(title ="Yearly Average Difference Male/Female")
 ```
 ### Create marketing MongoDB Db and three table  from result 
-```{r}
+```{r, echo= FALSE}
 conn <- mongo(collection = "countries", db = "marketing", url = "mongodb://localhost")
 conn$drop() 
 conn$insert(countries)
 results <- conn$find('{}') 
 str(results)
 ```
-```{r}
+```{r,echo =FALSE}
 conn1 <- mongo(collection = "countries_life_expectancy", db = "marketing", url = "mongodb://localhost")
 conn1$drop() 
 conn1$insert(countries_life_expectancy)
@@ -61,7 +61,7 @@ str(results)
 
 ## Countries Listed as Low-income countries, Middle-income countries and High-income countries
 
-```{r}
+```{r, echo = FALSE}
  income_groups <- complete  |> filter(entity %in% c("Low-income countries","Middle-income countries","High-income countries")) |> 
         select(entity,ymd,life_expectancy,life_expectancy_diff_fm)
 str(income_groups)
@@ -70,7 +70,7 @@ ggplot(income_groups) +geom_line(aes(x=ymd,y=life_expectancy,col=entity))
 ggplot(income_groups) +geom_line(aes(x=ymd,y=life_expectancy_diff_fm,col=entity))
 
 ```
-```{r}
+```{r, echo = FALSE}
 conn2 <- mongo(collection = "income_groups", db = "marketing", url = "mongodb://localhost")
 conn2$drop() 
 conn2$insert(income_groups)
@@ -79,19 +79,19 @@ str(results)
 ```
 ## Average for life_expectancy and life_expectancy_diff_fm
 
-```{r}
+```{r, echo = FALSE}
 
 income_group_by_year <- income_groups |> group_by(ymd) |> summarize( average_le = mean(life_expectancy),
         average_female_male = mean(life_expectancy_diff_fm))
         head(income_group_by_year)
 
 ```
-```{r}
+```{r, echo = FALSE}
 ggplot(income_group_by_year) + geom_line(aes(x=ymd,y=average_le))
 ggplot(income_group_by_year) + geom_line(aes(x=ymd,y=average_female_male))
 
 ```
-```{r}
+```{r, echo =FALSE}
 conn3 <- mongo(collection = "income_group_by_year", db = "marketing", url = "mongodb://localhost")
 conn3$drop() 
 conn3$insert(income_group_by_year)
@@ -99,7 +99,7 @@ results <- conn1$find('{}')
 str(results)
 ```
 ## First and Last Life Expectancy
-```{r}
+```{r, echo = FALSE }
 
 # Assuming 'countries' is your data frame and it has columns 'entity' for country and 'life_expectancy'
 countries_by_change_in_life_expectancy <- countries %>%
@@ -112,8 +112,7 @@ countries_by_change_in_life_expectancy <- countries %>%
   )
 ```
 
-```{r}
-library(tidyverse)
+```{r, echo =FALSE }
 
 # Assuming 'countries' is your data frame and it has columns 'entity', 'ymd', and 'life_expectancy'
 life_expectancy_data <- countries %>%
@@ -143,11 +142,11 @@ ggplot(life_expectancy_data, aes(x = time_point, y = life_expectancy, group = en
        y = "Life Expectancy")
 
 
-```{r}
-# conn4 <- mongo(collection = "countries_by_change_in_life_expectancy", db = "marketing", url = "mongodb://localhost")
-# conn4$drop() 
-# conn4$insert(countries_by_change_in_life_expectancy)
-# countries_by_change_in_life_expectancy <- conn1$find('{}') 
-# countries_by_change_in_life_expectancy$ymd <- as.Date(countries_by_change_in_life_expectancy$ymd)
-# str(countries_by_change_in_life_expectancy)
+```{r, echo =FALSE}
+conn4 <- mongo(collection = "countries_by_change_in_life_expectancy", db = "marketing", url = "mongodb://localhost")
+conn4$drop() 
+conn4$insert(countries_by_change_in_life_expectancy)
+countries_by_change_in_life_expectancy <- conn1$find('{}') 
+countries_by_change_in_life_expectancy$ymd <- as.Date(countries_by_change_in_life_expectancy$ymd)
+str(countries_by_change_in_life_expectancy)
 ```
