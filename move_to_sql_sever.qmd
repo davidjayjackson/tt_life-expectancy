@@ -1,0 +1,59 @@
+
+
+```{r}
+library(tidyverse)
+library(mongolite)
+library(janitor)
+library(DBI)
+library(odbc)
+```
+## Connect to SQL SERVER
+```{r}
+## https://db.rstudio.com/databases/microsoft-sql-server/
+db1 <- DBI::dbConnect(odbc::odbc(), 
+                      Driver = "SQL Server", 
+                      Server = "localhost\\SQLEXPRESS", 
+                      Database = "life_expectancy", 
+                      Trusted_Connection = "True")
+## Load tables from MongoDB
+```
+```{r, echo= FALSE}
+conn <- mongo(collection = "countries", db = "marketing", url = "mongodb://localhost")
+# conn$drop() 
+# conn$insert(countries)
+countries <- conn$find('{}') 
+countries$ymd <- as.Date(countries$ymd)
+dbWriteTable(db1, "countries",countries ,overwrite=TRUE)
+```
+
+```{r,echo =FALSE}
+conn1 <- mongo(collection = "countries_life_expectancy", db = "marketing", url = "mongodb://localhost")
+# conn1$drop() 
+# conn1$insert(countries_life_expectancy)
+countries_life_expectancy <- conn1$find('{}') 
+
+
+```{r, echo = FALSE}
+conn2 <- mongo(collection = "income_groups", db = "marketing", url = "mongodb://localhost")
+# conn2$drop() 
+# conn2$insert(income_groups)
+rincome_groups <- conn2$find('{}') 
+
+```
+
+```{r, echo =FALSE}
+conn3 <- mongo(collection = "income_group_by_year", db = "marketing", url = "mongodb://localhost")
+# conn3$drop() 
+# conn3$insert(income_group_by_year)
+results <- conn1$find('{}') 
+
+```
+
+```{r, echo =FALSE}
+conn4 <- mongo(collection = "countries_by_change_in_life_expectancy", db = "marketing", url = "mongodb://localhost")
+# conn4$drop() 
+# conn4$insert(countries_by_change_in_life_expectancy)
+# countries_by_change_in_life_expectancy <- conn4$find('{}') 
+# countries_by_change_in_life_expectancy$ymd <- as.Date(countries_by_change_in_life_expectancy$ymd)
+# str(countries_by_change_in_life_expectancy)
+```
