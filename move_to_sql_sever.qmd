@@ -1,4 +1,9 @@
 
+---
+title: "Our World In Data: Life Expectancy"
+format: html
+editor: visual
+---
 
 ```{r}
 library(tidyverse)
@@ -19,41 +24,41 @@ db1 <- DBI::dbConnect(odbc::odbc(),
 ```
 ```{r, echo= FALSE}
 conn <- mongo(collection = "countries", db = "marketing", url = "mongodb://localhost")
-# conn$drop() 
-# conn$insert(countries)
 countries <- conn$find('{}') 
+dim(countries)
 countries$ymd <- as.Date(countries$ymd)
 dbWriteTable(db1, "countries",countries ,overwrite=TRUE)
 ```
 
 ```{r,echo =FALSE}
 conn1 <- mongo(collection = "countries_life_expectancy", db = "marketing", url = "mongodb://localhost")
-# conn1$drop() 
-# conn1$insert(countries_life_expectancy)
 countries_life_expectancy <- conn1$find('{}') 
+dim(countries_life_expectancy)
+countries_life_expectancy$ymd <- as.Date(countries_life_expectancy$ymd)
+dbWriteTable(db1, "countries_life_expectancy",countries_life_expectancy ,overwrite=TRUE)
+```
 
 
 ```{r, echo = FALSE}
 conn2 <- mongo(collection = "income_groups", db = "marketing", url = "mongodb://localhost")
-# conn2$drop() 
-# conn2$insert(income_groups)
-rincome_groups <- conn2$find('{}') 
+income_groups <- conn2$find('{}') 
+dim(income_groups)
+income_groups$ymd <- as.Date(income_groups$ymd)
+dbWriteTable(db1, "income_groups",income_groups ,overwrite=TRUE)
 
 ```
 
 ```{r, echo =FALSE}
 conn3 <- mongo(collection = "income_group_by_year", db = "marketing", url = "mongodb://localhost")
-# conn3$drop() 
-# conn3$insert(income_group_by_year)
-results <- conn1$find('{}') 
-
+income_group_by_year <- conn3$find('{}') 
+dim(income_group_by_year)
+income_group_by_year$ymd <- as.Date(income_group_by_year$ymd)
+dbWriteTable(db1, "income_group_by_year",income_group_by_year ,overwrite=TRUE)
 ```
 
 ```{r, echo =FALSE}
 conn4 <- mongo(collection = "countries_by_change_in_life_expectancy", db = "marketing", url = "mongodb://localhost")
-# conn4$drop() 
-# conn4$insert(countries_by_change_in_life_expectancy)
-# countries_by_change_in_life_expectancy <- conn4$find('{}') 
-# countries_by_change_in_life_expectancy$ymd <- as.Date(countries_by_change_in_life_expectancy$ymd)
-# str(countries_by_change_in_life_expectancy)
+countries_by_change_in_life_expectancy <- conn4$find('{}') 
+dim(countries_by_change_in_life_expectancy)
+dbWriteTable(db1, "countries_by_change_in_life_expectancy",countries_by_change_in_life_expectancy,overwrite=TRUE)
 ```
